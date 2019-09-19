@@ -172,6 +172,10 @@ class MyFrame(wx.Frame):
         self.score_check = wx.CheckBox(self, wx.ID_ANY, ("Accuracy Rewards"))
         self.score_settings_button = wx.Button(self, wx.ID_ANY, ("Settings"))
 
+        #Pre-Trial Action Settings
+        self.pre_trial= wx.CheckBox(self, wx.ID_ANY, ("Pre-Trial Action"))
+        self.pre_trial_settings_button = wx.Button(self, wx.ID_ANY, ("Settings"))
+
         # Participant stuff (column 6)
         self.participants_statictext = wx.StaticText(self, wx.ID_ANY, "Participants")
         self.participants_staticline = wx.StaticLine(self, wx.ID_ANY, style = wx.EXPAND)
@@ -233,6 +237,10 @@ class MyFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.score_settings_press, self.score_settings_button)
 #        self.Bind(wx.EVT_LISTBOX, self.group_listbox_click, self.group_listbox)
         # end wxGlade
+
+        # Pre-Trial Action Events
+        self.Bind(wx.EVT_CHECKBOX, self.pre_trial_press, self.pre_trial)
+        self.Bind(wx.EVT_BUTTON, self.pre_trial_settings_press, self.pre_trial_settings_button)
 
     def __set_properties(self):
         # begin wxGlade: MyFrame.__set_properties
@@ -405,7 +413,11 @@ class MyFrame(wx.Frame):
         sizer_10 = wx.BoxSizer(wx.VERTICAL)
 
         sizer_10.Add(self.radio_box_1, 0, wx.EXPAND | wx.ALL, 3)
-        sizer_10.Add(self.static_line_3, 0, wx.EXPAND | wx.ALL, 5)
+        #sizer_10.Add(self.static_line_3, 0, wx.EXPAND | wx.ALL, 5) -->EXTRA PART WE DO NOT WANT
+        #ADD PRE-TRIAL ACTION CHECK BUTTON HERE AND BUTTON NEXT TO IT
+        sizer_10.Add(self.pre_trial, 0, wx.LEFT, 0)
+        sizer_10.Add(self.pre_trial_settings_button, 0, 0, 0)
+
 
         target_sizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -626,10 +638,19 @@ class MyFrame(wx.Frame):
             self.score_check.Enable(False)
             self.score_check.SetValue(False)
             self.score_settings_button.Enable(False)
+
+            #Pre-Trial Action Settings
+            self.pre_trial.Enable(False)
+            self.pre_trial.SetValue(False)
+            self.pre_trial_settings_button.Enable(False)
         else:
             # Scoring System
             self.score_check.Enable(True)
             self.score_settings_button.Enable(self.score_check.GetValue())
+
+            #Pre-Trial Action Settings
+            self.pre_trial.Enable(True)
+            self.pre_trial_settings_button.Enable(self.pre_trial.GetValue())
 
         #self.pause_static_text.Hide()
         #self.pause_txt.Hide()
@@ -718,6 +739,10 @@ class MyFrame(wx.Frame):
         self.score_check.Enable(False)
         self.score_settings_button.Enable(False)
 
+        # Pre-Trial Action
+        self.pre_trial.Enable(False)
+        self.pre_trial_settings_button.Enable(False)
+
 
     def list_box_dclick(self, event):
 
@@ -794,6 +819,10 @@ class MyFrame(wx.Frame):
             # Scoring System
             self.score_check.SetValue(self.current_experiment[self.highlit_task_num]['use_score'])
             self.score_settings_button.Enable(self.current_experiment[self.highlit_task_num]['use_score'])
+
+            # Pre-Trial Action
+            self.pre_trial.SetValue(self.current_experiment[self.highlit_task_num]['pre_trial_check'])
+            self.pre_trial_settings_button.Enable(self.current_experiment[self.highlit_task_num]['pre_trial_check'])
 
             if (self.current_experiment[self.highlit_task_num]['rotation_change_type'] == 'gradual'):
 #                self.MIN_TRIAL_BOOL = True
@@ -1064,6 +1093,9 @@ class MyFrame(wx.Frame):
             self.current_experiment[self.highlit_task_num]['pause_instruction'] = ""
             self.current_experiment[self.highlit_task_num]['final_rotation_angle'] = 0
 
+            # Pre-Trial Action
+            self.current_experiment[self.highlit_task_num]['pre_trial_check'] = False
+
             # Scoring System
             self.current_experiment[self.highlit_task_num]['use_score'] = False
 
@@ -1101,6 +1133,9 @@ class MyFrame(wx.Frame):
 
             self.score_check.SetValue(False)
             self.score_settings_button.Enable(False)
+
+            self.pre_trial.SetValue(False)
+            self.pre_trial_settings_button.Enable(False)
 
 #            with open(self.experiment_folder + self.current_experiment_name + ".json", "wb") as f:
 #                dump(self.experiment_holder, f)
@@ -1482,6 +1517,19 @@ class MyFrame(wx.Frame):
     def score_settings_press(self, event):
         scoreframe = ScoreFrame(self, wx.ID_ANY, "")
         scoreframe.Show(True)
+        event.Skip()
+
+    # Pre-Trial Action Events
+    def pre_trial_press(self, event):
+        self.current_experiment[self.highlit_task_num]['pre_trial_check'] = event.IsChecked()
+        self.pre_trial_settings_button.Disable()
+        if (self.pre_trial.IsChecked()):
+            self.pre_trial_settings_button.Enable()
+        event.Skip()
+
+    def pre_trial_settings_press(self, event):
+        pretrialframe = PreTrialFrame(self, wx.ID_ANY, "")
+        pretrialframe.Show(True)
         event.Skip()
 #    def rotation_angle_direction_press(self, event):
 #        self.current_experiment[self.highlit_task_num]['rotation_angle_direction'] = event.GetString()
@@ -2683,6 +2731,67 @@ class ScoreFrame(wx.Frame):
         self.Parent.current_experiment[self.Parent.highlit_task_num]['score_low_accuracy']['target_color'] = \
             event.GetColour().Get(includeAlpha=False)
         event.Skip()
+
+class PreTrialFrame(wx.Frame):
+    def __init__(self, *args, **kwds):
+
+        # begin wxGlade: scoreFrame.__init__
+        kwds["style"] = kwds.get("style", 0) \
+                        | wx.CAPTION | wx.CLIP_CHILDREN | wx.MINIMIZE_BOX \
+                        | wx.CLOSE_BOX | wx.MAXIMIZE_BOX | wx.RESIZE_BORDER | wx.SYSTEM_MENU
+        wx.Frame.__init__(self, *args, **kwds)
+        self.SetSize((250, 250))
+
+        self.__set_properties()
+        self.__do_layout()
+
+    def Option_Press(self, event):  # wxGlade: MyFrame.<event_handler>
+        chosen_option = event.GetString()
+        if (chosen_option == "Pre-Reach Aiming"):
+            print "Pre-Reach Aiming"
+            self.hold_home_statictext.Disable()
+            self.hold_home_slider.Disable()
+        elif (chosen_option == "Hold At Home"):
+            print "Hold At Home"
+            self.hold_home_statictext.Enable()
+            self.hold_home_slider.Enable()
+
+    def hold_home_choose(self, event):  # wxGlade: MyFrame.<event_handler>
+        self.hold_home_chosen = exp.myRounder(event.GetInt(), 5)
+        if self.hold_home_chosen < self.hold_home_chosen:
+            self.hold_home_slider.SetValue(self.hold_home_chosen)
+        else:
+            self.hold_home_chosen = self.hold_home_chosen
+            self.hold_home_slider.SetValue(self.hold_home_chosen)
+            self.hold_home_slider.SetValue(self.hold_home_chosen)
+        self.current_experiment[self.highlit_task_num]['hold_home'] = self.hold_home_chosen
+        self.current_experiment[self.highlit_task_num]['hold_home'] = self.hold_home_chosen
+        event.Skip()
+
+    def __set_properties(self):
+        self.SetTitle("Pre-Trial Action Settings")
+        self.pre_trial_radio_box = wx.RadioBox(self, wx.ID_ANY, ("Options"), choices=[("Pre-Reach Aiming"), ("Hold At Home")], majorDimension=1, style=wx.RA_SPECIFY_COLS)
+        self.Bind(wx.EVT_RADIOBOX, self.Option_Press, self.pre_trial_radio_box)
+
+        self.hold_home_statictext = wx.StaticText(self, wx.ID_ANY, ("Time Holding Home (in ms)"))
+        self.hold_home_slider = wx.Slider(self, wx.ID_ANY, minValue = 0, maxValue = 10000, value = 100, style=wx.SL_HORIZONTAL | wx.SL_LABELS)
+        self.Bind(wx.EVT_SLIDER, self.hold_home_choose, self.hold_home_slider)
+
+        self.hold_home_statictext.SetPosition((5,80))
+        self.hold_home_slider.SetPosition((5,100))
+
+
+    def __do_layout(self):
+        # begin wxGlade: scoreFrame.__do_layout
+        mainSizer = wx.BoxSizer(wx.HORIZONTAL)
+        secondSizer = wx.BoxSizer(wx.VERTICAL)
+
+        mainSizer.Add(self.pre_trial_radio_box, 0, wx.EXPAND | wx.ALL, 3)
+        secondSizer.Add(self.hold_home_statictext, 0, wx.EXPAND | wx.ALL, 3)
+        secondSizer.Add(self.hold_home_slider, 0, wx.EXPAND, 3)
+        self.hold_home_statictext.Disable()
+        self.hold_home_slider.Disable()
+
 
 # end of class MyFrame
 class MyApp(wx.App):
