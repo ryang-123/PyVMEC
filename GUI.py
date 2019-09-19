@@ -175,6 +175,7 @@ class MyFrame(wx.Frame):
         #Pre-Trial Action Settings
         self.pre_trial= wx.CheckBox(self, wx.ID_ANY, ("Pre-Trial Action"))
         self.pre_trial_settings_button = wx.Button(self, wx.ID_ANY, ("Settings"))
+        self.pre_trial_settings_button.Disable()
 
         # Participant stuff (column 6)
         self.participants_statictext = wx.StaticText(self, wx.ID_ANY, "Participants")
@@ -642,7 +643,7 @@ class MyFrame(wx.Frame):
             #Pre-Trial Action Settings
             self.pre_trial.Enable(False)
             self.pre_trial.SetValue(False)
-            self.pre_trial_settings_button.Enable(False)
+            self.pre_trial_settings_button.Disable()
         else:
             # Scoring System
             self.score_check.Enable(True)
@@ -650,7 +651,7 @@ class MyFrame(wx.Frame):
 
             #Pre-Trial Action Settings
             self.pre_trial.Enable(True)
-            self.pre_trial_settings_button.Enable(self.pre_trial.GetValue())
+            self.pre_trial_settings_button.Disable()
 
         #self.pause_static_text.Hide()
         #self.pause_txt.Hide()
@@ -741,7 +742,7 @@ class MyFrame(wx.Frame):
 
         # Pre-Trial Action
         self.pre_trial.Enable(False)
-        self.pre_trial_settings_button.Enable(False)
+        self.pre_trial_settings_button.Disable()
 
 
     def list_box_dclick(self, event):
@@ -822,7 +823,7 @@ class MyFrame(wx.Frame):
 
             # Pre-Trial Action
             self.pre_trial.SetValue(self.current_experiment[self.highlit_task_num]['pre_trial_check'])
-            self.pre_trial_settings_button.Enable(self.current_experiment[self.highlit_task_num]['pre_trial_check'])
+            self.pre_trial_settings_button.Disable()
 
             if (self.current_experiment[self.highlit_task_num]['rotation_change_type'] == 'gradual'):
 #                self.MIN_TRIAL_BOOL = True
@@ -1135,7 +1136,7 @@ class MyFrame(wx.Frame):
             self.score_settings_button.Enable(False)
 
             self.pre_trial.SetValue(False)
-            self.pre_trial_settings_button.Enable(False)
+            self.pre_trial_settings_button.Disable()
 
 #            with open(self.experiment_folder + self.current_experiment_name + ".json", "wb") as f:
 #                dump(self.experiment_holder, f)
