@@ -175,7 +175,7 @@ class MyFrame(wx.Frame):
         #Pre-Trial Action Settings
         self.pre_trial= wx.CheckBox(self, wx.ID_ANY, ("Pre-Trial Action"))
         self.pre_trial_settings_button = wx.Button(self, wx.ID_ANY, ("Settings"))
-        self.pre_trial_settings_button.Disable()
+        self.pre_trial_settings_button.Enable(self.pre_trial.IsChecked())
 
         # Participant stuff (column 6)
         self.participants_statictext = wx.StaticText(self, wx.ID_ANY, "Participants")
@@ -2758,7 +2758,7 @@ class PreTrialFrame(wx.Frame):
             self.hold_home_slider.Enable()
 
     def hold_home_choose(self, event):  # wxGlade: MyFrame.<event_handler>
-        self.hold_home_chosen = exp.myRounder(event.GetInt(), 5)
+        self.hold_home_chosen = exp.myRounder(event.GetInt(), 100)
         if self.hold_home_chosen < self.hold_home_chosen:
             self.hold_home_slider.SetValue(self.hold_home_chosen)
         else:
@@ -2775,7 +2775,7 @@ class PreTrialFrame(wx.Frame):
         self.Bind(wx.EVT_RADIOBOX, self.Option_Press, self.pre_trial_radio_box)
 
         self.hold_home_statictext = wx.StaticText(self, wx.ID_ANY, ("Time Holding Home (in ms)"))
-        self.hold_home_slider = wx.Slider(self, wx.ID_ANY, minValue = 0, maxValue = 10000, value = 100, style=wx.SL_HORIZONTAL | wx.SL_LABELS)
+        self.hold_home_slider = wx.Slider(self, wx.ID_ANY, minValue = 0, maxValue = 10000, value = 1500, style=wx.SL_HORIZONTAL | wx.SL_LABELS)
         self.Bind(wx.EVT_SLIDER, self.hold_home_choose, self.hold_home_slider)
 
         self.hold_home_statictext.SetPosition((5,80))

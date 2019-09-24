@@ -5,6 +5,7 @@ from json import dump
 from numpy import sqrt, arctan2, cos, sin, linalg, clip, ndarray, array, diff, mean, arange, pi, dot
 import csv
 import math
+import scipy as sp
 from pandas import concat, DataFrame
 from random import choice, seed, shuffle
 from Tkinter import Tk
@@ -219,6 +220,96 @@ def angle_split(min_angle, max_angle, num_splits):
 #        end_text.draw()
 #        myWin.flip()
 #        event.waitKeys(keyList=['space'])
+
+####################################PRE AIM STUFF#########################################################
+
+    class myHomeArrow:
+
+        def __init__(self,cfg,ori=0,color='#999999',size=1):
+            self.ori = ori
+            self.color = color
+            self.size = size
+            self.rightArrow = visual.ShapeStim(win=cfg['win'],
+                                              lineWidth=0,
+                                              lineColorSpace='rgb',
+                                              lineColor=None,
+                                              fillColorSpace='rgb',
+                                              fillColor=self.color,
+                                              closeShape=True,
+                                              size=self.size,
+                                              ori=self.ori,
+                                              vertices=((-.1,0),(.9,0),(-.636,-.636))
+                                              )
+            self.leftArrow = visual.ShapeStim(win=cfg['win'],
+                                              lineWidth=0,
+                                              lineColorSpace='rgb',
+                                              lineColor=None,
+                                              fillColorSpace='rgb',
+                                              fillColor=self.color,
+                                              closeShape=True,
+                                              size=self.size,
+                                              ori=self.ori,
+                                              vertices=((-.1,0),(.9,0),(-.636,.636))
+                                              )
+
+        def draw(self):
+            self.rightArrow.ori = self.ori
+            self.leftArrow.ori = self.ori
+            self.rightArrow.fillColor = self.color
+            self.leftArrow.fillColor = self.color
+            self.rightArrow.size = self.size
+            self.leftArrow.size = self.size
+            self.rightArrow.draw()
+            self.leftArrow.draw()
+
+    cfg['home_arrow'] = myHomeArrow(cfg,size=cfg['radius'])
+
+def doAiming(cfg):
+
+    cfg['aim'] = sp.NaN
+    cfg['aimtime_ms'] = sp.NaN
+
+    cfg['aim_arrow'].draw()
+
+    aimDecided = False
+
+    event.clearEvents()
+
+    startaiming = time.time()
+
+    while(not(aimDecided)):
+
+        keys = event.getKeys(keyList=['num_enter'])
+        if ('num_enter' in keys):
+            cfg['aim'] = -1 * cfg['aim_arrow'].ori
+            aimDecided = True
+            stopaiming = time.time()
+
+        #NOTE: RYAN CHANGED key.NUM_LEFT and key.NUM_RIGHT to key.LEFT and key.RIGHT --> Local change only
+        if cfg['keyboard'][key.LEFT]:
+            cfg['aim_arrow'].ori = cfg['aim_arrow'].ori - 1
+            #print(cfg['aim_arrow'].ori)
+        if cfg['keyboard'][key.RIGHT]:
+            cfg['aim_arrow'].ori = cfg['aim_arrow'].ori + 1
+            #print(cfg['aim_arrow'].ori)
+        #print(cfg['keyboard'])
+        cfg['aim_arrow'].ori = cfg['aim_arrow'].ori % 360
+
+
+        cfg['aim_arrow'].draw()
+
+        if cfg['keyboard'][key.ESCAPE]:
+            sys.exit('escape key pressed')
+
+    #if (cfg['aim'] < 0) or (cfg['aim'] > 360):
+    cfg['aim'] = cfg['aim'] % 360
+    cfg['aimtime_ms'] = int((stopaiming - startaiming) * 1000)
+
+    #print(cfg['tasks'][cfg['taskno']]['target'][cfg['trialno']])
+    #print(cfg['aim'])
+
+
+    return(cfg)
 
 
 def trial_runner(cfg={}):
@@ -437,6 +528,8 @@ def trial_runner(cfg={}):
             pass
 
         # SHOW OBJECTS
+        #cfg = doAiming(cfg)
+        #aim = cfg['aim']
         try:
             if (pos_buffer == 0):
                 pos_buffer = pos_buffer + 1
@@ -690,10 +783,13 @@ def trial_runner(cfg={}):
 
                     timePos_dict['accuracy_reward'] = [cfg['score_points']] * len(mouseposXArray)
 
+
                     if (cfg['use_score']):
                         timePos_dict['accuracy_reward_bool'] = ['True'] * len(mouseposXArray)
                     else:
                         timePos_dict['accuracy_reward_bool'] = ['False'] * len(mouseposXArray)
+
+
 
                     return timePos_dict
 
@@ -760,6 +856,7 @@ def run_experiment(participant, experiment = {}):
 
     configureWindow(cfg, experiment)
 
+    #print cfg.keys()
     cfg['psyMouse'] = event.Mouse(visible = False, newPos = None, win = cfg['win'])
 
     class myMouse:
@@ -788,7 +885,7 @@ def run_experiment(participant, experiment = {}):
                                  fillColor=[0, 0, 0],
                                  size=cfg['circle_radius']*0.6,
                                  lineColor=[0,0,0])
-
+                                 
         # there is no 'else' following this... don't we need to do something else?
         if settings['custom_stim_enable'] == True:
             # shouldn't this be in a separate function?
