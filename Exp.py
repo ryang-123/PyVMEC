@@ -1,10 +1,12 @@
 from psychopy.visual import Window, Circle, ShapeStim, TextStim, ImageStim
 from psychopy import event, core
+from pyglet.window import key
 from os import path, listdir
 from json import dump
 from numpy import sqrt, arctan2, cos, sin, linalg, clip, ndarray, array, diff, mean, arange, pi, dot
 import csv
 import math
+import time
 import scipy as sp
 from pandas import concat, DataFrame
 from random import choice, seed, shuffle
@@ -229,7 +231,7 @@ def angle_split(min_angle, max_angle, num_splits):
             self.ori = ori
             self.color = color
             self.size = size
-            self.rightArrow = visual.ShapeStim(win=cfg['win'],
+            self.rightArrow = ShapeStim(win=cfg['win'],
                                               lineWidth=0,
                                               lineColorSpace='rgb',
                                               lineColor=None,
@@ -240,7 +242,7 @@ def angle_split(min_angle, max_angle, num_splits):
                                               ori=self.ori,
                                               vertices=((-.1,0),(.9,0),(-.636,-.636))
                                               )
-            self.leftArrow = visual.ShapeStim(win=cfg['win'],
+            self.leftArrow = ShapeStim(win=cfg['win'],
                                               lineWidth=0,
                                               lineColorSpace='rgb',
                                               lineColor=None,
@@ -266,44 +268,66 @@ def angle_split(min_angle, max_angle, num_splits):
 
 def doAiming(cfg):
 
-    cfg['aim'] = sp.NaN
-    cfg['aimtime_ms'] = sp.NaN
+    print "IN doAiming FUNCTION"
 
+    cfg['aim'] = sp.NaN
+    print "1"
+    cfg['aimtime_ms'] = sp.NaN
+    print "2"
+    cfg['keyboard'] = key.KeyStateHandler()
+    print "3"
+    cfg['win'].winHandle.push_handlers(cfg['keyboard'])
+    print "4"
+    cfg['aim_arrow'].ori = -1
     cfg['aim_arrow'].draw()
+    cfg['win'].flip()
+    print "drew arrow"
 
     aimDecided = False
+    n = 1
 
-    event.clearEvents()
+    #event.clearEvents()
 
-    startaiming = time.time()
+    #startaiming = time.time()
 
-    while(not(aimDecided)):
+    while(n == 1):
+        #print 'entered loop'
 
-        keys = event.getKeys(keyList=['num_enter'])
-        if ('num_enter' in keys):
+        if (cfg['keyboard'][key.ENTER]):
             cfg['aim'] = -1 * cfg['aim_arrow'].ori
             aimDecided = True
-            stopaiming = time.time()
+            print 'aim decided'
+            #stopaiming = time.time()
 
         #NOTE: RYAN CHANGED key.NUM_LEFT and key.NUM_RIGHT to key.LEFT and key.RIGHT --> Local change only
         if cfg['keyboard'][key.LEFT]:
             cfg['aim_arrow'].ori = cfg['aim_arrow'].ori - 1
+            #cfg['aim_arrow'].draw()
+            print "LEFT"
+            n = n + 1
+            #time.sleep(0.5)
             #print(cfg['aim_arrow'].ori)
         if cfg['keyboard'][key.RIGHT]:
             cfg['aim_arrow'].ori = cfg['aim_arrow'].ori + 1
+            #cfg['aim_arrow'].draw()
+            print "RIGHT"
+            n = n + 1
+            #time.sleep(0.5)
             #print(cfg['aim_arrow'].ori)
         #print(cfg['keyboard'])
-        cfg['aim_arrow'].ori = cfg['aim_arrow'].ori % 360
-
+        #cfg['aim_arrow'].ori = cfg['aim_arrow'].ori % 360
 
         cfg['aim_arrow'].draw()
+        cfg['win'].flip()
+
 
         if cfg['keyboard'][key.ESCAPE]:
             sys.exit('escape key pressed')
 
     #if (cfg['aim'] < 0) or (cfg['aim'] > 360):
-    cfg['aim'] = cfg['aim'] % 360
-    cfg['aimtime_ms'] = int((stopaiming - startaiming) * 1000)
+    #cfg['aim'] = cfg['aim'] % 360
+    #cfg['aimtime_ms'] = int((stopaiming - startaiming) * 1000)
+    #cfg['aimtime_ms'] = int((stopaiming - startaiming) * 1000)
 
     #print(cfg['tasks'][cfg['taskno']]['target'][cfg['trialno']])
     #print(cfg['aim'])
@@ -528,13 +552,25 @@ def trial_runner(cfg={}):
             pass
 
         # SHOW OBJECTS
-        #cfg = doAiming(cfg)
-        #aim = cfg['aim']
+
+        winSize = cfg['win'].size
+        PPC = max(winSize)/31.
+
+        cfg['NSU'] = PPC * 8
+
+        arrowvertices = ((-.02,-.02),(0.82,-.02),(0.8,-.08),(1,0),(0.8,.08),(0.82,.02),(-.02,.02))
+
+        cfg['aim_arrow'] = ShapeStim(win=cfg['win'], lineWidth=cfg['NSU']*0.005, lineColorSpace='rgb', lineColor='#CC00CC', fillColorSpace='rgb', fillColor=None, vertices=arrowvertices, closeShape=True, size=PPC*7)
+
+        #doAiming(cfg)
+
         try:
             if (pos_buffer == 0):
                 pos_buffer = pos_buffer + 1
             if (show_home == True):
                 startCircle.draw() # home position
+                #cfg['aim_arrow'].draw()
+                #doAiming(cfg)
             if (show_target == True):
                 endCircle.draw()   # target position
             if (show_arrow == True):
@@ -549,6 +585,7 @@ def trial_runner(cfg={}):
             print('Failed to show object: ')
             print(e)
             pass
+        doAiming(cfg)
 
         # phase 1 is getting to the home position (usually over very soon)
         try:
@@ -859,6 +896,19 @@ def run_experiment(participant, experiment = {}):
     #print cfg.keys()
     cfg['psyMouse'] = event.Mouse(visible = False, newPos = None, win = cfg['win'])
 
+    #winSize = cfg['win'].size
+
+    # PPC = max(winSize)/31.
+    #
+    # cfg['NSU'] = PPC * 8
+    #
+    # arrowvertices = ((-.02,-.02),(0.82,-.02),(0.8,-.08),(1,0),(0.8,.08),(0.82,.02),(-.02,.02))
+    #
+    # cfg['aim_arrow'] = ShapeStim(win=cfg['win'], lineWidth=cfg['NSU']*0.005, lineColorSpace='rgb', lineColor='#CC00CC', fillColorSpace='rgb', fillColor=None, vertices=arrowvertices, closeShape=True, size=PPC*7)
+
+    #doAiming(cfg)
+
+
     class myMouse:
         def Pos(self):
             #print('PsychoPy mouse')
@@ -885,7 +935,7 @@ def run_experiment(participant, experiment = {}):
                                  fillColor=[0, 0, 0],
                                  size=cfg['circle_radius']*0.6,
                                  lineColor=[0,0,0])
-                                 
+
         # there is no 'else' following this... don't we need to do something else?
         if settings['custom_stim_enable'] == True:
             # shouldn't this be in a separate function?
