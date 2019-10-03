@@ -278,6 +278,8 @@ def doAiming(cfg):
     print "3"
     cfg['win'].winHandle.push_handlers(cfg['keyboard'])
     print "4"
+
+    cfg['end_circle'].draw()
     cfg['aim_arrow'].ori = -1
     cfg['aim_arrow'].draw()
     cfg['win'].flip()
@@ -290,24 +292,27 @@ def doAiming(cfg):
 
     #startaiming = time.time()
 
-    while(n == 1):
+    while(aimDecided == False):
         #print 'entered loop'
 
         if (cfg['keyboard'][key.ENTER]):
             cfg['aim'] = -1 * cfg['aim_arrow'].ori
             aimDecided = True
             print 'aim decided'
+            cfg['aim_arrow'].ori = cfg['aim_arrow'].ori % 360
+            print cfg['aim_arrow'].ori
+            sys.exit('Aim chosen and exited')
             #stopaiming = time.time()
 
         #NOTE: RYAN CHANGED key.NUM_LEFT and key.NUM_RIGHT to key.LEFT and key.RIGHT --> Local change only
-        if cfg['keyboard'][key.LEFT]:
+        elif cfg['keyboard'][key.LEFT]:
             cfg['aim_arrow'].ori = cfg['aim_arrow'].ori - 1
             #cfg['aim_arrow'].draw()
             print "LEFT"
             n = n + 1
             #time.sleep(0.5)
             #print(cfg['aim_arrow'].ori)
-        if cfg['keyboard'][key.RIGHT]:
+        elif cfg['keyboard'][key.RIGHT]:
             cfg['aim_arrow'].ori = cfg['aim_arrow'].ori + 1
             #cfg['aim_arrow'].draw()
             print "RIGHT"
@@ -315,8 +320,9 @@ def doAiming(cfg):
             #time.sleep(0.5)
             #print(cfg['aim_arrow'].ori)
         #print(cfg['keyboard'])
-        #cfg['aim_arrow'].ori = cfg['aim_arrow'].ori % 360
+        cfg['aim_arrow'].ori = cfg['aim_arrow'].ori % 360
 
+        cfg['end_circle'].draw()
         cfg['aim_arrow'].draw()
         cfg['win'].flip()
 
@@ -876,6 +882,8 @@ def run_experiment(participant, experiment = {}):
     task_save = DataFrame({})
     running = deepcopy(experiment['experiment']) # why copy this? set up a window, a mouse object and add those, plus a task-index to your cfg, then simply loop through the tasks, and throw that to a run-task function?
     settings = deepcopy(experiment['settings']) # same here...
+    print running
+    print settings
 
     cfg = {}
     #### Generate seed ####
