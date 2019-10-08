@@ -2756,6 +2756,7 @@ class PreTrialFrame(wx.Frame):
             self.hold_home_statictext.Disable()
             self.hold_home_slider.Disable()
             self.Parent.current_experiment[self.Parent.highlit_task_num]['pre_reach_aim'] = True
+            self.Parent.current_experiment[self.Parent.highlit_task_num]['hold_on_home'] = False
             # self.pre_trial_radio_box.SetValue(self.current_experiment[self.highlit_task_num]['pre_reach_aim'])
 
 
@@ -2764,6 +2765,7 @@ class PreTrialFrame(wx.Frame):
             self.hold_home_statictext.Enable()
             self.hold_home_slider.Enable()
             self.Parent.current_experiment[self.Parent.highlit_task_num]['hold_on_home'] = True
+            self.Parent.current_experiment[self.Parent.highlit_task_num]['pre_reach_aim'] = False
 
     def hold_home_choose(self, event):  # wxGlade: MyFrame.<event_handler>
         self.hold_home_chosen = exp.myRounder(event.GetInt(), 100)

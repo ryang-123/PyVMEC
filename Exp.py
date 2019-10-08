@@ -266,80 +266,81 @@ def angle_split(min_angle, max_angle, num_splits):
 
     cfg['home_arrow'] = myHomeArrow(cfg,size=cfg['radius'])
 
-def doAiming(cfg):
+def doAiming(cfg,isAim):
+    if (isAim == True):
+        print "IN doAiming FUNCTION"
 
-    print "IN doAiming FUNCTION"
-
-    cfg['aim'] = sp.NaN
-    print "1"
-    cfg['aimtime_ms'] = sp.NaN
-    print "2"
-    cfg['keyboard'] = key.KeyStateHandler()
-    print "3"
-    cfg['win'].winHandle.push_handlers(cfg['keyboard'])
-    print "4"
-
-    cfg['end_circle'].draw()
-    cfg['aim_arrow'].ori = -1
-    cfg['aim_arrow'].draw()
-    cfg['win'].flip()
-    print "drew arrow"
-
-    aimDecided = False
-    n = 1
-
-    #event.clearEvents()
-
-    #startaiming = time.time()
-
-    while(aimDecided == False):
-        #print 'entered loop'
-
-        if (cfg['keyboard'][key.ENTER]):
-            cfg['aim'] = -1 * cfg['aim_arrow'].ori
-            aimDecided = True
-            print 'aim decided'
-            cfg['aim_arrow'].ori = cfg['aim_arrow'].ori % 360
-            print cfg['aim_arrow'].ori
-            sys.exit('Aim chosen and exited')
-            #stopaiming = time.time()
-
-        #NOTE: RYAN CHANGED key.NUM_LEFT and key.NUM_RIGHT to key.LEFT and key.RIGHT --> Local change only
-        elif cfg['keyboard'][key.LEFT]:
-            cfg['aim_arrow'].ori = cfg['aim_arrow'].ori - 1
-            #cfg['aim_arrow'].draw()
-            print "LEFT"
-            n = n + 1
-            #time.sleep(0.5)
-            #print(cfg['aim_arrow'].ori)
-        elif cfg['keyboard'][key.RIGHT]:
-            cfg['aim_arrow'].ori = cfg['aim_arrow'].ori + 1
-            #cfg['aim_arrow'].draw()
-            print "RIGHT"
-            n = n + 1
-            #time.sleep(0.5)
-            #print(cfg['aim_arrow'].ori)
-        #print(cfg['keyboard'])
-        cfg['aim_arrow'].ori = cfg['aim_arrow'].ori % 360
+        cfg['aim'] = sp.NaN
+        print "1"
+        cfg['aimtime_ms'] = sp.NaN
+        print "2"
+        cfg['keyboard'] = key.KeyStateHandler()
+        print "3"
+        cfg['win'].winHandle.push_handlers(cfg['keyboard'])
+        print "4"
 
         cfg['end_circle'].draw()
+        cfg['aim_arrow'].ori = -1
         cfg['aim_arrow'].draw()
         cfg['win'].flip()
+        print "drew arrow"
+
+        aimDecided = False
+        n = 1
+
+        #event.clearEvents()
+
+        #startaiming = time.time()
+
+        while(aimDecided == False):
+            #print 'entered loop'
+
+            if (cfg['keyboard'][key.ENTER]):
+                cfg['aim'] = -1 * cfg['aim_arrow'].ori
+                aimDecided = True
+                print 'aim decided'
+                cfg['aim_arrow'].ori = cfg['aim_arrow'].ori % 360
+                print cfg['aim_arrow'].ori
+                sys.exit('Aim chosen and exited')
+                #stopaiming = time.time()
+
+            #NOTE: RYAN CHANGED key.NUM_LEFT and key.NUM_RIGHT to key.LEFT and key.RIGHT --> Local change only
+            elif cfg['keyboard'][key.LEFT]:
+                cfg['aim_arrow'].ori = cfg['aim_arrow'].ori - 1
+                #cfg['aim_arrow'].draw()
+                print "LEFT"
+                n = n + 1
+                #time.sleep(0.5)
+                #print(cfg['aim_arrow'].ori)
+            elif cfg['keyboard'][key.RIGHT]:
+                cfg['aim_arrow'].ori = cfg['aim_arrow'].ori + 1
+                #cfg['aim_arrow'].draw()
+                print "RIGHT"
+                n = n + 1
+                #time.sleep(0.5)
+                #print(cfg['aim_arrow'].ori)
+            #print(cfg['keyboard'])
+            cfg['aim_arrow'].ori = cfg['aim_arrow'].ori % 360
+
+            cfg['end_circle'].draw()
+            cfg['aim_arrow'].draw()
+            cfg['win'].flip()
 
 
-        if cfg['keyboard'][key.ESCAPE]:
-            sys.exit('escape key pressed')
+            if cfg['keyboard'][key.ESCAPE]:
+                sys.exit('escape key pressed')
 
-    #if (cfg['aim'] < 0) or (cfg['aim'] > 360):
-    #cfg['aim'] = cfg['aim'] % 360
-    #cfg['aimtime_ms'] = int((stopaiming - startaiming) * 1000)
-    #cfg['aimtime_ms'] = int((stopaiming - startaiming) * 1000)
+        #if (cfg['aim'] < 0) or (cfg['aim'] > 360):
+        #cfg['aim'] = cfg['aim'] % 360
+        #cfg['aimtime_ms'] = int((stopaiming - startaiming) * 1000)
+        #cfg['aimtime_ms'] = int((stopaiming - startaiming) * 1000)
 
-    #print(cfg['tasks'][cfg['taskno']]['target'][cfg['trialno']])
-    #print(cfg['aim'])
+        #print(cfg['tasks'][cfg['taskno']]['target'][cfg['trialno']])
+        #print(cfg['aim'])
 
 
-    return(cfg)
+        return(cfg)
+
 
 
 def trial_runner(cfg={}):
@@ -591,7 +592,7 @@ def trial_runner(cfg={}):
             print('Failed to show object: ')
             print(e)
             pass
-        doAiming(cfg)
+        doAiming(cfg,isAim)
 
         # phase 1 is getting to the home position (usually over very soon)
         try:
@@ -884,7 +885,9 @@ def run_experiment(participant, experiment = {}):
     settings = deepcopy(experiment['settings']) # same here...
     print running
     print "---------------------------------------------------------------------------------"
-    print running[0]['pre_reach_aim']
+    global isAim
+    isAim = running[0]['pre_reach_aim']
+    print isAim
 
 
     cfg = {}
