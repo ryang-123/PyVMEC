@@ -267,7 +267,7 @@ def angle_split(min_angle, max_angle, num_splits):
     cfg['home_arrow'] = myHomeArrow(cfg,size=cfg['radius'])
 
 def doAiming(cfg,isAim):
-    if (isAim == True):
+    if (preTrialAction == True and isAim == True):
         print "IN doAiming FUNCTION"
 
         cfg['aim'] = sp.NaN
@@ -885,9 +885,12 @@ def run_experiment(participant, experiment = {}):
     settings = deepcopy(experiment['settings']) # same here...
     print running
     print "---------------------------------------------------------------------------------"
+    global preTrialAction
     global isAim
+    preTrialAction = running[0]['pre_trial_check']
     isAim = running[0]['pre_reach_aim']
-    print isAim
+    print "Pre Trial: " + str(preTrialAction)
+    print "Is Aim: " + str(isAim)
 
 
     cfg = {}

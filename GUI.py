@@ -2750,6 +2750,7 @@ class PreTrialFrame(wx.Frame):
         self.__do_layout()
 
     def Option_Press(self, event):  # wxGlade: MyFrame.<event_handler>
+
         chosen_option = event.GetString()
         if (chosen_option == "Pre-Reach Aiming"):
             print "Pre-Reach Aiming"
