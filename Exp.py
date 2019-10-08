@@ -883,7 +883,9 @@ def run_experiment(participant, experiment = {}):
     running = deepcopy(experiment['experiment']) # why copy this? set up a window, a mouse object and add those, plus a task-index to your cfg, then simply loop through the tasks, and throw that to a run-task function?
     settings = deepcopy(experiment['settings']) # same here...
     print running
-    print settings
+    print "---------------------------------------------------------------------------------"
+    print running[0]['pre_reach_aim']
+
 
     cfg = {}
     #### Generate seed ####
