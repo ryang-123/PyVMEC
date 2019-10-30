@@ -286,7 +286,6 @@ def doAiming(cfg,isAim):
         print "drew arrow"
 
         aimDecided = False
-        n = 1
 
         #event.clearEvents()
 
@@ -301,7 +300,8 @@ def doAiming(cfg,isAim):
                 print 'aim decided'
                 cfg['aim_arrow'].ori = cfg['aim_arrow'].ori % 360
                 print cfg['aim_arrow'].ori
-                sys.exit('Aim chosen and exited')
+                cfg['win'].flip()
+                #sys.exit('Aim chosen and exited')
                 #stopaiming = time.time()
 
             #NOTE: RYAN CHANGED key.NUM_LEFT and key.NUM_RIGHT to key.LEFT and key.RIGHT --> Local change only
@@ -309,14 +309,12 @@ def doAiming(cfg,isAim):
                 cfg['aim_arrow'].ori = cfg['aim_arrow'].ori - 1
                 #cfg['aim_arrow'].draw()
                 print "LEFT"
-                n = n + 1
                 #time.sleep(0.5)
                 #print(cfg['aim_arrow'].ori)
             elif cfg['keyboard'][key.RIGHT]:
                 cfg['aim_arrow'].ori = cfg['aim_arrow'].ori + 1
                 #cfg['aim_arrow'].draw()
                 print "RIGHT"
-                n = n + 1
                 #time.sleep(0.5)
                 #print(cfg['aim_arrow'].ori)
             #print(cfg['keyboard'])
@@ -570,6 +568,11 @@ def trial_runner(cfg={}):
         cfg['aim_arrow'] = ShapeStim(win=cfg['win'], lineWidth=cfg['NSU']*0.005, lineColorSpace='rgb', lineColor='#CC00CC', fillColorSpace='rgb', fillColor=None, vertices=arrowvertices, closeShape=True, size=PPC*7)
 
         #doAiming(cfg)
+        if (holdHome >= 50):
+            print holdHome
+
+        doAiming(cfg,isAim)
+
 
         try:
             if (pos_buffer == 0):
@@ -592,7 +595,7 @@ def trial_runner(cfg={}):
             print('Failed to show object: ')
             print(e)
             pass
-        doAiming(cfg,isAim)
+        #doAiming(cfg,isAim)
 
         # phase 1 is getting to the home position (usually over very soon)
         try:
@@ -653,6 +656,7 @@ def trial_runner(cfg={}):
                     if (get_dist(circle_pos, endPos) < dist_criterion and velocity < 35 and cfg['terminal_feedback'] == False):
                         phase_2 = True
                         show_home = True
+
                         show_target = False
 
                         # If we are using end of reach to show feedback, change the colours for
@@ -887,8 +891,10 @@ def run_experiment(participant, experiment = {}):
     print "---------------------------------------------------------------------------------"
     global preTrialAction
     global isAim
+    global holdHome
     preTrialAction = running[0]['pre_trial_check']
     isAim = running[0]['pre_reach_aim']
+    holdHome = running[0]['hold_home']
     print "Pre Trial: " + str(preTrialAction)
     print "Is Aim: " + str(isAim)
 
