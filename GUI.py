@@ -2786,7 +2786,7 @@ class PreTrialFrame(wx.Frame):
         self.Bind(wx.EVT_RADIOBOX, self.Option_Press, self.pre_trial_radio_box)
 
         self.hold_home_statictext = wx.StaticText(self, wx.ID_ANY, ("Time Holding Home (in ms)"))
-        self.hold_home_slider = wx.Slider(self, wx.ID_ANY, minValue = 0, maxValue = 10000, value = 1500, style=wx.SL_HORIZONTAL | wx.SL_LABELS)
+        self.hold_home_slider = wx.Slider(self, wx.ID_ANY, minValue = 50, maxValue = 10000, value = 50, style=wx.SL_HORIZONTAL | wx.SL_LABELS)
         self.Bind(wx.EVT_SLIDER, self.hold_home_choose, self.hold_home_slider)
 
         self.hold_home_statictext.SetPosition((5,80))
