@@ -6,7 +6,7 @@ from json import dump
 from numpy import sqrt, arctan2, cos, sin, linalg, clip, ndarray, array, diff, mean, arange, pi, dot
 import csv
 import math
-import time
+#import time
 import scipy as sp
 from pandas import concat, DataFrame
 from random import choice, seed, shuffle
@@ -20,7 +20,7 @@ try:
 except:
     pass
 
-from time import time
+from time import time, sleep
 
 root = Tk()
 def addWorkSpaceLimits(screen):
@@ -339,7 +339,22 @@ def doAiming(cfg,isAim):
 
         return(cfg)
 
-
+def hold_at_home_function(holdHome):
+    if (holdHome >= 50 and isHold == True):
+        firstTime = time()
+        print firstTime
+        holdTime = firstTime + holdHome
+        print holdTime
+        holding = True
+        while (holding == True):
+            currentTime = time()
+            if (currentTime >= holdTime):
+                holding = False
+                break
+            else:
+                print "still holding"
+                break
+        print "We held"
 
 def trial_runner(cfg={}):
     try:
@@ -568,8 +583,11 @@ def trial_runner(cfg={}):
         cfg['aim_arrow'] = ShapeStim(win=cfg['win'], lineWidth=cfg['NSU']*0.005, lineColorSpace='rgb', lineColor='#CC00CC', fillColorSpace='rgb', fillColor=None, vertices=arrowvertices, closeShape=True, size=PPC*7)
 
         #doAiming(cfg)
-        if (holdHome >= 50):
+        if (holdHome >= 50 and isHold == True):
             print holdHome
+            hold_at_home_function(holdHome)
+            print "WE HELD"
+            #time.sleep()
 
         doAiming(cfg,isAim)
 
@@ -892,11 +910,14 @@ def run_experiment(participant, experiment = {}):
     global preTrialAction
     global isAim
     global holdHome
+    global isHold
     preTrialAction = running[0]['pre_trial_check']
     isAim = running[0]['pre_reach_aim']
     holdHome = running[0]['hold_home']
+    isHold = running[0]['hold_on_home']
     print "Pre Trial: " + str(preTrialAction)
     print "Is Aim: " + str(isAim)
+    print "Hold at home run_experiment: " + str(holdHome)
 
 
     cfg = {}
