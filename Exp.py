@@ -267,66 +267,64 @@ def angle_split(min_angle, max_angle, num_splits):
     cfg['home_arrow'] = myHomeArrow(cfg,size=cfg['radius'])
 
 def doAiming(cfg,isAim):
-    if (preTrialAction == True and isAim == True):
-        print "IN doAiming FUNCTION"
 
-        cfg['aim'] = sp.NaN
-        print "1"
-        cfg['aimtime_ms'] = sp.NaN
-        print "2"
-        cfg['keyboard'] = key.KeyStateHandler()
-        print "3"
-        cfg['win'].winHandle.push_handlers(cfg['keyboard'])
-        print "4"
+    print "IN doAiming FUNCTION"
 
-        cfg['end_circle'].draw()
-        cfg['aim_arrow'].ori = -1
-        cfg['aim_arrow'].draw()
-        cfg['win'].flip()
-        print "drew arrow"
+    cfg['aim'] = sp.NaN
+    cfg['aimtime_ms'] = sp.NaN
+    cfg['keyboard'] = key.KeyStateHandler()
+    cfg['win'].winHandle.push_handlers(cfg['keyboard'])
 
-        aimDecided = False
+    cfg['end_circle'].draw()
+    cfg['aim_arrow'].ori = -1
+    cfg['aim_arrow'].draw()
+    cfg['win'].flip()
+    print "drew arrow"
 
-        #event.clearEvents()
+    aimDecided = False
+
+    #event.clearEvents()
 
         #startaiming = time.time()
 
-        while(aimDecided == False):
+    while(aimDecided == False):
             #print 'entered loop'
 
-            if (cfg['keyboard'][key.ENTER]):
-                cfg['aim'] = -1 * cfg['aim_arrow'].ori
-                aimDecided = True
-                print 'aim decided'
-                cfg['aim_arrow'].ori = cfg['aim_arrow'].ori % 360
-                print cfg['aim_arrow'].ori
-                cfg['win'].flip()
-                #sys.exit('Aim chosen and exited')
-                #stopaiming = time.time()
+        if (cfg['keyboard'][key.ENTER]):
+            cfg['aim'] = -1 * cfg['aim_arrow'].ori
+            aimDecided = True
+            print 'aim decided'
+            cfg['aim_arrow'].ori = cfg['aim_arrow'].ori % 360
+            print cfg['aim_arrow'].ori
+                #cfg['win'].flip()
+            print "Aim Decided " + str(aimDecided)
+            break
+            return cfg['aim_arrow'].ori
+            #sys.exit('Aim chosen and exited')
+            #stopaiming = time.time()
 
             #NOTE: RYAN CHANGED key.NUM_LEFT and key.NUM_RIGHT to key.LEFT and key.RIGHT --> Local change only
-            elif cfg['keyboard'][key.LEFT]:
-                cfg['aim_arrow'].ori = cfg['aim_arrow'].ori - 1
-                #cfg['aim_arrow'].draw()
-                print "LEFT"
-                #time.sleep(0.5)
-                #print(cfg['aim_arrow'].ori)
-            elif cfg['keyboard'][key.RIGHT]:
-                cfg['aim_arrow'].ori = cfg['aim_arrow'].ori + 1
-                #cfg['aim_arrow'].draw()
-                print "RIGHT"
+        elif cfg['keyboard'][key.LEFT]:
+            cfg['aim_arrow'].ori = cfg['aim_arrow'].ori - 1
+            #cfg['aim_arrow'].draw()
+            print "LEFT"
+            #time.sleep(0.5)
+            #print(cfg['aim_arrow'].ori)
+        elif cfg['keyboard'][key.RIGHT]:
+            cfg['aim_arrow'].ori = cfg['aim_arrow'].ori + 1
+            #cfg['aim_arrow'].draw()
+            print "RIGHT"
                 #time.sleep(0.5)
                 #print(cfg['aim_arrow'].ori)
             #print(cfg['keyboard'])
-            cfg['aim_arrow'].ori = cfg['aim_arrow'].ori % 360
+        cfg['aim_arrow'].ori = cfg['aim_arrow'].ori % 360
+        cfg['end_circle'].draw()
+        cfg['aim_arrow'].draw()
+        cfg['win'].flip()
 
-            cfg['end_circle'].draw()
-            cfg['aim_arrow'].draw()
-            cfg['win'].flip()
 
-
-            if cfg['keyboard'][key.ESCAPE]:
-                sys.exit('escape key pressed')
+        if cfg['keyboard'][key.ESCAPE]:
+            sys.exit('escape key pressed')
 
         #if (cfg['aim'] < 0) or (cfg['aim'] > 360):
         #cfg['aim'] = cfg['aim'] % 360
@@ -337,7 +335,10 @@ def doAiming(cfg,isAim):
         #print(cfg['aim'])
 
 
-        return(cfg)
+        #return(cfg)
+    print "we done"
+    isAim = False
+    return cfg['aim_arrow'].ori
 
 def hold_at_home_function(holdHome):
     if (holdHome >= 50 and isHold == True):
@@ -348,11 +349,14 @@ def hold_at_home_function(holdHome):
         holding = True
         while (holding == True):
             currentTime = time()
+            print currentTime
             if (currentTime >= holdTime):
                 holding = False
                 break
             else:
                 print "still holding"
+                currentTime = time()
+                print currentTime
                 break
         print "We held"
 
@@ -464,6 +468,18 @@ def trial_runner(cfg={}):
         if (cfg['use_score']):
             myCircle.lineColor = myCircle.fillColor = [0, 0, 0]
             endCircle.lineColor = endCircle.fillColor = [0, 0, 0]
+        #doAiming(cfg,isAim)
+        if (preTrialAction == True and isAim == True):
+             winSize = cfg['win'].size
+             PPC = max(winSize)/31.
+             cfg['NSU'] = PPC * 8
+             print startPos
+             print startPos[0]
+             print startPos[1]
+             arrowvertices = ((-.02,-.02),(0.82,-.02),(0.8,-.08),(1,0),(0.8,.08),(0.82,.02),(-.02,.02))
+             cfg['aim_arrow'] = ShapeStim(win=cfg['win'], lineWidth=cfg['NSU']*0.005, lineColorSpace='rgb', lineColor='#CC00CC', fillColorSpace='rgb', fillColor=None, vertices=arrowvertices, closeShape=True, size=PPC*7)
+             aimValue = doAiming(cfg,isAim)
+             print "AIM VALUE: " + str(aimValue)
 
     except Exception as e:
         print "error in Block 1" # what is block 1?
@@ -573,23 +589,28 @@ def trial_runner(cfg={}):
 
         # SHOW OBJECTS
 
-        winSize = cfg['win'].size
-        PPC = max(winSize)/31.
-
-        cfg['NSU'] = PPC * 8
-
-        arrowvertices = ((-.02,-.02),(0.82,-.02),(0.8,-.08),(1,0),(0.8,.08),(0.82,.02),(-.02,.02))
-
-        cfg['aim_arrow'] = ShapeStim(win=cfg['win'], lineWidth=cfg['NSU']*0.005, lineColorSpace='rgb', lineColor='#CC00CC', fillColorSpace='rgb', fillColor=None, vertices=arrowvertices, closeShape=True, size=PPC*7)
+        # winSize = cfg['win'].size
+        # PPC = max(winSize)/31.
+        #
+        # cfg['NSU'] = PPC * 8
+        #
+        # arrowvertices = ((-.02,-.02),(0.82,-.02),(0.8,-.08),(1,0),(0.8,.08),(0.82,.02),(-.02,.02))
+        #
+        # cfg['aim_arrow'] = ShapeStim(win=cfg['win'], lineWidth=cfg['NSU']*0.005, lineColorSpace='rgb', lineColor='#CC00CC', fillColorSpace='rgb', fillColor=None, vertices=arrowvertices, closeShape=True, size=PPC*7)
 
         #doAiming(cfg)
-        if (holdHome >= 50 and isHold == True):
-            print holdHome
-            hold_at_home_function(holdHome)
-            print "WE HELD"
+        #if (holdHome >= 50 and isHold == True):
+        #    print holdHome
+        #    hold_at_home_function(holdHome)
+        #    print "WE HELD"
             #time.sleep()
 
-        doAiming(cfg,isAim)
+
+        #doAiming(cfg,isAim)
+        # if (preTrialAction == True and isAim == True):
+        #     aimValue = doAiming(cfg,isAim)
+        #     print "AIM VALUE: " + str(aimValue)
+        #     pass
 
 
         try:
@@ -614,9 +635,14 @@ def trial_runner(cfg={}):
             print(e)
             pass
         #doAiming(cfg,isAim)
-
+        #if (isAim == True):
+        #    print "Target aim: " + str(doAiming(cfg,isAim))
+        #    break
         # phase 1 is getting to the home position (usually over very soon)
         try:
+            #if (isAim == True):
+            #    print "Target aim: " + str(doAiming(cfg,isAim))
+            #    break
             if (phase_1 == False):
                 if (cfg['trial_type'] == 'cursor'):
                     if (get_dist(circle_pos, startPos) < dist_criterion and velocity < 35):
@@ -1207,6 +1233,14 @@ def run_experiment(participant, experiment = {}):
                 running[i]['target_distance'] = int(running[i]['max_distance']*running[i]['target_distance_ratio'])
 
                 running[i]['time'] = core.getTime()
+
+                #checking if we must do a pre-trail action, if yes: do it then proceed to do trial
+                #if (preTrialAction == True):
+                    #if (isAim == True):
+                        #doAiming(cfg,isAim)
+                    #elif (isHold == True):
+                        #hold_at_home_function(holdHome)
+
                 exp = trial_runner(running[i]) # but this runs a whole task, not a single trial, right? since we are going from the experiment runner straight to task... is the function misnamed or is the code not organized?
 
                 if exp == 'escaped':
