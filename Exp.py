@@ -469,6 +469,8 @@ def trial_runner(cfg={}):
             myCircle.lineColor = myCircle.fillColor = [0, 0, 0]
             endCircle.lineColor = endCircle.fillColor = [0, 0, 0]
         #doAiming(cfg,isAim)
+        global aimValue
+        aimValue = -1
         if (preTrialAction == True and isAim == True):
              winSize = cfg['win'].size
              PPC = max(winSize)/31.
@@ -874,6 +876,9 @@ def trial_runner(cfg={}):
                     timePos_dict['targetdistance_percmax'] = int(cfg['target_distance_ratio']*100)
 
                     timePos_dict['accuracy_reward'] = [cfg['score_points']] * len(mouseposXArray)
+                    timePos_dict['pre_reach_aim'] = cfg['pre_reach_aim']
+                    timePos_dict['aim_value'] = 0
+
 
 
                     if (cfg['use_score']):
@@ -881,8 +886,8 @@ def trial_runner(cfg={}):
                     else:
                         timePos_dict['accuracy_reward_bool'] = ['False'] * len(mouseposXArray)
 
-
-
+                    print "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                    print timePos_dict['aim_value']
                     return timePos_dict
 
                 elif ((cfg['trial_type'] == 'no_cursor' or cfg['trial_type'] == 'error_clamp' or (cfg['trial_type'] == 'cursor' and cfg['terminal_feedback'] == True)) and get_dist(circle_pos, startPos) <= 3*get_dist(startPos, endPos)/20):
@@ -1242,6 +1247,12 @@ def run_experiment(participant, experiment = {}):
                         #hold_at_home_function(holdHome)
 
                 exp = trial_runner(running[i]) # but this runs a whole task, not a single trial, right? since we are going from the experiment runner straight to task... is the function misnamed or is the code not organized?
+                if (isAim == True):
+                    #print cfg
+                    #print "==============================================================="
+                    exp['aim_value'] = aimValue
+                    #print exp['aim_value']
+                    #timePos_dict['aim_value'] = cfg['aim_arrow'].ori
 
                 if exp == 'escaped':
                     running[i]['win'].close()
@@ -1249,7 +1260,7 @@ def run_experiment(participant, experiment = {}):
                 else:
                     # is this where the data is saved?
                     # would make more sense to me to do that in the trial function, as it is the trial data that is being stored?
-                    df_exp = DataFrame(exp, columns=['task_num','task_name', 'trial_type', 'trial_num', 'terminalfeedback_bool','rotation_angle','targetangle_deg','targetdistance_percmax','homex_px','homey_px','targetx_px','targety_px', 'time_s', 'mousex_px', 'mousey_px', 'cursorx_px', 'cursory_px', 'accuracy_reward', 'accuracy_reward_bool'])
+                    df_exp = DataFrame(exp, columns=['task_num','task_name', 'trial_type', 'trial_num', 'terminalfeedback_bool','rotation_angle','targetangle_deg','targetdistance_percmax','homex_px','homey_px','targetx_px','targety_px', 'time_s', 'mousex_px', 'mousey_px', 'cursorx_px', 'cursory_px', 'accuracy_reward', 'accuracy_reward_bool', 'pre_reach_aim', 'aim_value'])
                     df_exp.to_csv(path_or_buf = path.join("data", settings['experiment_folder'], participant, running[i]['task_name'] + "_" + str(trial_num) + ".csv"), index=False)
                     task_save = concat([task_save, df_exp])
                     end_exp = concat([end_exp, df_exp])
@@ -1564,7 +1575,7 @@ def continue_experiment(participant, experiment = {}):
                     running[i]['win'].close()
                     return end_exp
                 else:
-                    df_exp = DataFrame(exp, columns=['task_num','task_name', 'trial_type', 'trial_num', 'terminalfeedback_bool','rotation_angle','targetangle_deg','targetdistance_percmax','homex_px','homey_px','targetx_px','targety_px', 'time_s', 'mousex_px', 'mousey_px', 'cursorx_px', 'cursory_px', 'accuracy_reward', 'accuracy_reward_bool'])
+                    df_exp = DataFrame(exp, columns=['task_num','task_name', 'trial_type', 'trial_num', 'terminalfeedback_bool','rotation_angle','targetangle_deg','targetdistance_percmax','homex_px','homey_px','targetx_px','targety_px', 'time_s', 'mousex_px', 'mousey_px', 'cursorx_px', 'cursory_px', 'accuracy_reward', 'accuracy_reward_bool', 'pre_reach_aim'])
                     df_exp.to_csv(path_or_buf = path.join("data", settings['experiment_folder'], participant, running[i]['task_name'] + "_" + str(trial_num) + ".csv"), index=False)
                     end_exp = concat([end_exp, df_exp])
 
