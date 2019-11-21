@@ -276,7 +276,7 @@ def doAiming(cfg,isAim):
     cfg['win'].winHandle.push_handlers(cfg['keyboard'])
 
     cfg['end_circle'].draw()
-    cfg['aim_arrow'].ori = -1
+    cfg['aim_arrow'].ori = (-1 * cfg['target_angle']) + 10
     cfg['aim_arrow'].draw()
     cfg['win'].flip()
     print "drew arrow"
@@ -457,7 +457,6 @@ def trial_runner(cfg={}):
 
         ### starting circle
         startCircle.setPos(startPos)
-        print "START: " + str(startPos)
         arrow.setPos(startPos)
         arrowFill.setPos(startPos)
         ### Rotation direction
@@ -482,6 +481,7 @@ def trial_runner(cfg={}):
              arrowvertices = ((-.02,-.02),(0.82,-.02),(0.8,-.08),(1,0),(0.8,.08),(0.82,.02),(-.02,.02))
              cfg['aim_arrow'] = ShapeStim(win=cfg['win'], lineWidth=cfg['NSU']*0.005, lineColorSpace='rgb', lineColor='#CC00CC', fillColorSpace='rgb', fillColor=None, vertices=arrowvertices, closeShape=True, size=PPC*7)
              cfg['aim_arrow'].pos = startPos
+             cfg['aim_arrow'].ori = cfg['target_angle']
              print cfg['aim_arrow'].pos
              aimValue = doAiming(cfg,isAim)
              print "AIM VALUE: " + str(aimValue)
