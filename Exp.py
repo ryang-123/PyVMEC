@@ -307,13 +307,13 @@ def doAiming(cfg,isAim):
         elif cfg['keyboard'][key.LEFT]:
             cfg['aim_arrow'].ori = cfg['aim_arrow'].ori - 1
             #cfg['aim_arrow'].draw()
-            print "LEFT"
+            #print "LEFT"
             #time.sleep(0.5)
             #print(cfg['aim_arrow'].ori)
         elif cfg['keyboard'][key.RIGHT]:
             cfg['aim_arrow'].ori = cfg['aim_arrow'].ori + 1
             #cfg['aim_arrow'].draw()
-            print "RIGHT"
+            #print "RIGHT"
                 #time.sleep(0.5)
                 #print(cfg['aim_arrow'].ori)
             #print(cfg['keyboard'])
@@ -457,6 +457,7 @@ def trial_runner(cfg={}):
 
         ### starting circle
         startCircle.setPos(startPos)
+        print "START: " + str(startPos)
         arrow.setPos(startPos)
         arrowFill.setPos(startPos)
         ### Rotation direction
@@ -480,6 +481,8 @@ def trial_runner(cfg={}):
              print startPos[1]
              arrowvertices = ((-.02,-.02),(0.82,-.02),(0.8,-.08),(1,0),(0.8,.08),(0.82,.02),(-.02,.02))
              cfg['aim_arrow'] = ShapeStim(win=cfg['win'], lineWidth=cfg['NSU']*0.005, lineColorSpace='rgb', lineColor='#CC00CC', fillColorSpace='rgb', fillColor=None, vertices=arrowvertices, closeShape=True, size=PPC*7)
+             cfg['aim_arrow'].pos = startPos
+             print cfg['aim_arrow'].pos
              aimValue = doAiming(cfg,isAim)
              print "AIM VALUE: " + str(aimValue)
 
