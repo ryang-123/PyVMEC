@@ -6,6 +6,7 @@ from json import dump
 from numpy import sqrt, arctan2, cos, sin, linalg, clip, ndarray, array, diff, mean, arange, pi, dot
 import csv
 import math
+import random
 #import time
 import scipy as sp
 from pandas import concat, DataFrame
@@ -268,7 +269,7 @@ def angle_split(min_angle, max_angle, num_splits):
 
 def doAiming(cfg,isAim):
 
-    print "IN doAiming FUNCTION"
+    #print "IN doAiming FUNCTION"
 
     cfg['aim'] = sp.NaN
     cfg['aimtime_ms'] = sp.NaN
@@ -276,10 +277,10 @@ def doAiming(cfg,isAim):
     cfg['win'].winHandle.push_handlers(cfg['keyboard'])
 
     cfg['end_circle'].draw()
-    cfg['aim_arrow'].ori = (-1 * cfg['target_angle']) + 10
+    cfg['aim_arrow'].ori = (-1 * cfg['target_angle']) + random.randint(-10,10)
     cfg['aim_arrow'].draw()
     cfg['win'].flip()
-    print "drew arrow"
+    #print "drew arrow"
 
     aimDecided = False
 
@@ -293,11 +294,11 @@ def doAiming(cfg,isAim):
         if (cfg['keyboard'][key.ENTER]):
             cfg['aim'] = -1 * cfg['aim_arrow'].ori
             aimDecided = True
-            print 'aim decided'
+            #print 'aim decided'
             cfg['aim_arrow'].ori = cfg['aim_arrow'].ori % 360
-            print cfg['aim_arrow'].ori
+            #print cfg['aim_arrow'].ori --->PRINTS DEGREE
                 #cfg['win'].flip()
-            print "Aim Decided " + str(aimDecided)
+            #print "Aim Decided " + str(aimDecided)
             break
             return cfg['aim_arrow'].ori
             #sys.exit('Aim chosen and exited')
@@ -336,8 +337,7 @@ def doAiming(cfg,isAim):
 
 
         #return(cfg)
-    print "we done"
-    isAim = False
+    #print "we done"
     return cfg['aim_arrow'].ori
 
 def hold_at_home_function(holdHome):
@@ -471,20 +471,24 @@ def trial_runner(cfg={}):
         #doAiming(cfg,isAim)
         global aimValue
         aimValue = -1
+        # if (isAim == True):
+        #     show_home = False
+        #     show_cursor = False
+
         if (preTrialAction == True and isAim == True):
              winSize = cfg['win'].size
              PPC = max(winSize)/31.
              cfg['NSU'] = PPC * 8
-             print startPos
-             print startPos[0]
-             print startPos[1]
+             #print startPos
+             #print startPos[0]
+             #print startPos[1]
              arrowvertices = ((-.02,-.02),(0.82,-.02),(0.8,-.08),(1,0),(0.8,.08),(0.82,.02),(-.02,.02))
              cfg['aim_arrow'] = ShapeStim(win=cfg['win'], lineWidth=cfg['NSU']*0.005, lineColorSpace='rgb', lineColor='#CC00CC', fillColorSpace='rgb', fillColor=None, vertices=arrowvertices, closeShape=True, size=PPC*7)
              cfg['aim_arrow'].pos = startPos
              cfg['aim_arrow'].ori = cfg['target_angle']
-             print cfg['aim_arrow'].pos
+             #print cfg['aim_arrow'].pos
              aimValue = doAiming(cfg,isAim)
-             print "AIM VALUE: " + str(aimValue)
+             #print "AIM VALUE: " + str(aimValue)
 
     except Exception as e:
         print "error in Block 1" # what is block 1?
@@ -594,34 +598,11 @@ def trial_runner(cfg={}):
 
         # SHOW OBJECTS
 
-        # winSize = cfg['win'].size
-        # PPC = max(winSize)/31.
-        #
-        # cfg['NSU'] = PPC * 8
-        #
-        # arrowvertices = ((-.02,-.02),(0.82,-.02),(0.8,-.08),(1,0),(0.8,.08),(0.82,.02),(-.02,.02))
-        #
-        # cfg['aim_arrow'] = ShapeStim(win=cfg['win'], lineWidth=cfg['NSU']*0.005, lineColorSpace='rgb', lineColor='#CC00CC', fillColorSpace='rgb', fillColor=None, vertices=arrowvertices, closeShape=True, size=PPC*7)
-
-        #doAiming(cfg)
-        #if (holdHome >= 50 and isHold == True):
-        #    print holdHome
-        #    hold_at_home_function(holdHome)
-        #    print "WE HELD"
-            #time.sleep()
-
-
-        #doAiming(cfg,isAim)
-        # if (preTrialAction == True and isAim == True):
-        #     aimValue = doAiming(cfg,isAim)
-        #     print "AIM VALUE: " + str(aimValue)
-        #     pass
-
-
         try:
             if (pos_buffer == 0):
                 pos_buffer = pos_buffer + 1
             if (show_home == True):
+                #print "PRINT START CIRCLE HERE"
                 startCircle.draw() # home position
                 #cfg['aim_arrow'].draw()
                 #doAiming(cfg)
@@ -631,6 +612,7 @@ def trial_runner(cfg={}):
                 arrow.draw()
                 arrowFill.draw()
             if (show_cursor == True):
+                #print "PRINT MY CURSOR HERE"
                 myCircle.draw()    # cursor
             # Show the score text only in cursor and error-clamp
             if (cfg['use_score'] and cfg['trial_type'] != 'no_cursor' and cfg['trial_type'] != 'pause'):
@@ -639,15 +621,7 @@ def trial_runner(cfg={}):
             print('Failed to show object: ')
             print(e)
             pass
-        #doAiming(cfg,isAim)
-        #if (isAim == True):
-        #    print "Target aim: " + str(doAiming(cfg,isAim))
-        #    break
-        # phase 1 is getting to the home position (usually over very soon)
         try:
-            #if (isAim == True):
-            #    print "Target aim: " + str(doAiming(cfg,isAim))
-            #    break
             if (phase_1 == False):
                 if (cfg['trial_type'] == 'cursor'):
                     if (get_dist(circle_pos, startPos) < dist_criterion and velocity < 35):
@@ -745,6 +719,7 @@ def trial_runner(cfg={}):
                                 score_text.draw()
 
                             # show feedback:
+                            #print "PRINT END CIRCLE HERE 2"
                             endCircle.draw()
                             myCircle.draw()
 
@@ -812,6 +787,7 @@ def trial_runner(cfg={}):
 
                         while (show_terminal):
                             # show feedback:
+                            #print "PRINTING END CIRCLE HERE 3"
                             endCircle.draw()
                             myCircle.draw()
                             myWin.flip()
@@ -889,8 +865,8 @@ def trial_runner(cfg={}):
                     else:
                         timePos_dict['accuracy_reward_bool'] = ['False'] * len(mouseposXArray)
 
-                    print "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-                    print timePos_dict['aim_value']
+                    #print "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                    #print timePos_dict['aim_value']
                     return timePos_dict
 
                 elif ((cfg['trial_type'] == 'no_cursor' or cfg['trial_type'] == 'error_clamp' or (cfg['trial_type'] == 'cursor' and cfg['terminal_feedback'] == True)) and get_dist(circle_pos, startPos) <= 3*get_dist(startPos, endPos)/20):
@@ -939,8 +915,8 @@ def run_experiment(participant, experiment = {}):
     task_save = DataFrame({})
     running = deepcopy(experiment['experiment']) # why copy this? set up a window, a mouse object and add those, plus a task-index to your cfg, then simply loop through the tasks, and throw that to a run-task function?
     settings = deepcopy(experiment['settings']) # same here...
-    print running
-    print "---------------------------------------------------------------------------------"
+    #print running
+    #print "---------------------------------------------------------------------------------"
     global preTrialAction
     global isAim
     global holdHome
@@ -949,9 +925,9 @@ def run_experiment(participant, experiment = {}):
     isAim = running[0]['pre_reach_aim']
     holdHome = running[0]['hold_home']
     isHold = running[0]['hold_on_home']
-    print "Pre Trial: " + str(preTrialAction)
-    print "Is Aim: " + str(isAim)
-    print "Hold at home run_experiment: " + str(holdHome)
+    #print "Pre Trial: " + str(preTrialAction)
+    #print "Is Aim: " + str(isAim)
+    #print "Hold at home run_experiment: " + str(holdHome)
 
 
     cfg = {}
