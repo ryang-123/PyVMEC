@@ -290,7 +290,6 @@ def doAiming(cfg,isAim):
 
     while(aimDecided == False):
             #print 'entered loop'
-
         if (cfg['keyboard'][key.ENTER]):
             cfg['aim'] = -1 * cfg['aim_arrow'].ori
             aimDecided = True
